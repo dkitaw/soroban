@@ -25,6 +25,10 @@
 CONST.FIELD.WIDTH = CONST.FIELD.KETA * CONST.FIELD.KETAWIDTH;
 CONST.FIELD.HEIGHT = CONST.FIELD.TOPHEIGHT + CONST.FIELD.MIDDLEHEIGHT + CONST.FIELD.BOTTOMHEIGHT;
 
+var se = {
+    crack: new buzz.sound('se/crack.mp3')
+};
+
 var Soroban = function (element) {
     var soroban = this;
 
@@ -67,6 +71,8 @@ var Soroban = function (element) {
     this.dequeue = function () {
         if (soroban.queue.length > 0) {
             soroban.running = true;
+            se.crack.stop();
+            se.crack.play();
             soroban.queue.shift()();
         } else {
             soroban.running = false;
@@ -132,7 +138,7 @@ var Keta = function (number, soroban) {
             keta.tamas[0].switch(soroban.dequeue);
         }
     };
-}
+};
 
 var Tama = function (keta, number) {
     this.keta = keta;
@@ -215,7 +221,7 @@ var Tama = function (keta, number) {
             height: CONST.SHADOW.HEIGHT * this.zoom
         };
     }
-}
+};
 
 $(document).ready(function () {
     soroban = new Soroban($('#soroban'));
