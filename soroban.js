@@ -19,7 +19,8 @@
     SHADOW: {
         HEIGHT: 80,
         WIDTH: 116
-    }
+    },
+    SPEED: 200
 };
 
 CONST.FIELD.WIDTH = CONST.FIELD.KETA * CONST.FIELD.KETAWIDTH;
@@ -71,8 +72,6 @@ var Soroban = function (element) {
     this.dequeue = function () {
         if (soroban.queue.length > 0) {
             soroban.running = true;
-            se.crack.stop();
-            se.crack.play();
             soroban.queue.shift()();
         } else {
             soroban.running = false;
@@ -170,8 +169,12 @@ var Tama = function (keta, number) {
 
     this.switch = function (callback) {
         this.state = !(this.state);
-        $tama.animate(this.tamaCSS(), 150, 'linear', callback);
-        $shadow.animate(this.shadowCSS(), 150, 'linear');
+        $tama.animate(this.tamaCSS(), CONST.SPEED, 'linear', function () {
+            se.crack.stop();
+            se.crack.play();
+            if (callback) callback();
+        });
+        $shadow.animate(this.shadowCSS(), CONST.SPEED, 'linear');
     }
 
     this.virtualX = function () {
