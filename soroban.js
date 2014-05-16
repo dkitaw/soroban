@@ -139,10 +139,6 @@ var Soroban = function (element) {
             }
         }
     };
-
-    setInterval(function () {
-        soroban.addNumber(0, Math.random() * 1000);
-    }, 1000);
 };
 
 var Keta = function (number, soroban) {
@@ -272,4 +268,8 @@ var Tama = function (keta, number) {
 
 $(document).ready(function () {
     soroban = new Soroban($('#soroban'));
+
+    setInterval(function () {
+        soroban.addNumber(0, Math.random() * 1000);
+    }, 1000);
 });
