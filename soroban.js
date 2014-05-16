@@ -90,13 +90,25 @@ var Soroban = function (element) {
         var carry = digit;
         while (carry !== 0 && counter < CONST.FIELD.KETA) {
             var sum = soroban.ketas[counter].digit + carry;
-            soroban.enqueue((function(counter, sum) { // fuckin' ES5 trick
+            soroban.enqueue((function (counter, sum) { // fuckin' ES5 trick
+                soroban.ketas[counter].digit = sum % 10;
                 return function () {
                     soroban.ketas[counter].set(sum % 10);
                 };
             })(counter, sum));
             carry = Math.floor(sum / 10);
             counter++;
+        }
+    };
+
+    this.addNumber = function (keta, number) {
+        var digits = new Array();
+        for (var i = 0; i < CONST.FIELD.KETA; i++) {
+            digits.push(number % 10);
+            number = Math.floor(number / 10);
+        }
+        for (var i = CONST.FIELD.KETA - 1; i >= keta; i--) {
+            soroban.addDigit(i, digits[i - keta]);
         }
     };
 
@@ -110,6 +122,7 @@ var Soroban = function (element) {
         if (!desc) {
             for (var i = CONST.FIELD.KETA - 1; i >= 0; i--) {
                 soroban.enqueue((function (i, digit) { // fuckin' ES5 trick
+                    soroban.ketas[i].digit = digit;
                     return function () {
                         soroban.ketas[i].set(digit);
                     };
@@ -118,6 +131,7 @@ var Soroban = function (element) {
         } else {
             for (var i = 0; i < CONST.FIELD.KETA; i++) {
                 soroban.enqueue((function (i, digit) { // fuckin' ES5 trick
+                    soroban.ketas[i].digit = digit;
                     return function () {
                         soroban.ketas[i].set(digit);
                     };
@@ -127,7 +141,7 @@ var Soroban = function (element) {
     };
 
     setInterval(function () {
-        soroban.setNumber(Math.floor((new Date) / 1000), true);
+        soroban.addNumber(0, Math.random() * 1000);
     }, 1000);
 };
 
@@ -143,8 +157,6 @@ var Keta = function (number, soroban) {
     }
 
     this.set = function (digit) {
-        keta.digit = digit;
-
         var changes = new Array();
         for (var i = 1; i <= 4; i++) {
             if (keta.tamas[i].state === false ^ (digit % 5) < i) {
@@ -201,12 +213,12 @@ var Tama = function (keta, number) {
 
     this.switch = function (callback) {
         this.state = !(this.state);
-        $tama.animate(this.tamaCSS(), CONST.SPEED, 'linear', function () {
+        $tama.animate(this.tamaCSS(), CONST.SPEED, 'swing', function () {
             se.crack.stop();
             se.crack.play();
             if (callback) callback();
         });
-        $shadow.animate(this.shadowCSS(), CONST.SPEED, 'linear');
+        $shadow.animate(this.shadowCSS(), CONST.SPEED, 'swing');
     }
 
     this.virtualX = function () {
@@ -260,5 +272,4 @@ var Tama = function (keta, number) {
 
 $(document).ready(function () {
     soroban = new Soroban($('#soroban'));
-    soroban.setNumber(Math.floor((new Date) / 1000), false);
 });
