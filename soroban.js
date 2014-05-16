@@ -27,7 +27,9 @@ CONST.FIELD.WIDTH = CONST.FIELD.KETA * CONST.FIELD.KETAWIDTH;
 CONST.FIELD.HEIGHT = CONST.FIELD.TOPHEIGHT + CONST.FIELD.MIDDLEHEIGHT + CONST.FIELD.BOTTOMHEIGHT;
 
 var se = {
-    crack: new buzz.sound('se/crack.mp3')
+    crack: new buzz.sound('se/crack', {
+        formats: ['mp3', 'wav']
+    })
 };
 
 var Soroban = function (element) {
