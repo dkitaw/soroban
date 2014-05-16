@@ -270,6 +270,6 @@ $(document).ready(function () {
     soroban = new Soroban($('#soroban'));
 
     setInterval(function () {
-        soroban.addNumber(0, Math.random() * 1000);
+        soroban.setNumber(new Date() / 1000);
     }, 1000);
 });
