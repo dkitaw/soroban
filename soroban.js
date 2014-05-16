@@ -86,28 +86,54 @@ var Soroban = function (element) {
 
     this.addDigit = function (keta, digit) {
         var counter = keta;
-        var carry = digit;
-        while (carry !== 0 && counter < CONST.FIELD.KETA) {
-            var sum = soroban.ketas[counter].digit + carry;
-            soroban.enqueue((function (counter, sum) { // fuckin' ES5 trick
-                soroban.ketas[counter].digit = sum % 10;
-                return function () {
-                    soroban.ketas[counter].set(sum % 10);
-                };
-            })(counter, sum));
-            carry = Math.floor(sum / 10);
-            counter++;
+        if (digit >= 0) {
+            var carry = digit;
+            while (carry !== 0 && counter < CONST.FIELD.KETA) {
+                var sum = soroban.ketas[counter].digit + carry;
+                soroban.enqueue((function (counter, sum) { // fuckin' ES5 trick
+                    soroban.ketas[counter].digit = sum % 10;
+                    return function () {
+                        soroban.ketas[counter].set(sum % 10);
+                    };
+                })(counter, sum));
+                carry = Math.floor(sum / 10);
+                counter++;
+            }
+        } else {
+            var carry = -digit;
+            while (carry !== 0 && counter < CONST.FIELD.KETA) {
+                var sum = 10 + soroban.ketas[counter].digit - carry;
+                soroban.enqueue((function (counter, sum) { // fuckin' ES5 trick
+                    soroban.ketas[counter].digit = sum % 10;
+                    return function () {
+                        soroban.ketas[counter].set(sum % 10);
+                    };
+                })(counter, sum));
+                carry = 1 - Math.floor(sum / 10);
+                counter++;
+            }
         }
     };
 
     this.addNumber = function (keta, number) {
         var digits = new Array();
-        for (var i = 0; i < CONST.FIELD.KETA; i++) {
-            digits.push(number % 10);
-            number = Math.floor(number / 10);
-        }
-        for (var i = CONST.FIELD.KETA - 1; i >= keta; i--) {
-            soroban.addDigit(i, digits[i - keta]);
+        if (number >= 0) {
+            for (var i = 0; i < CONST.FIELD.KETA; i++) {
+                digits.push(number % 10);
+                number = Math.floor(number / 10);
+            }
+            for (var i = CONST.FIELD.KETA - 1; i >= keta; i--) {
+                soroban.addDigit(i, digits[i - keta]);
+            }
+        } else {
+            number = -number;
+            for (var i = 0; i < CONST.FIELD.KETA; i++) {
+                digits.push(number % 10);
+                number = Math.floor(number / 10);
+            }
+            for (var i = CONST.FIELD.KETA - 1; i >= keta; i--) {
+                soroban.addDigit(i, -digits[i - keta]);
+            }
         }
     };
 
@@ -268,7 +294,9 @@ var Tama = function (keta, number) {
 $(document).ready(function () {
     soroban = new Soroban($('#soroban'));
 
+    soroban.setNumber(new Date() / 1000);
+
     setInterval(function () {
-        soroban.setNumber(new Date() / 1000, true);
+        soroban.addNumber(0, 1);
     }, 1000);
 });
