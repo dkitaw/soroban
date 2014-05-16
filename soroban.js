@@ -47,7 +47,6 @@ var Soroban = function (element) {
             }
         }
     };
-    this.arrange();
 
     this.onResize = function () {
         soroban.width = element.width('60%').width();
