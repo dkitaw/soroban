@@ -49,7 +49,7 @@ var Soroban = function (element) {
     };
 
     this.onResize = function () {
-        soroban.width = element.width('60%').width();
+        soroban.width = element.width('80%').width();
         soroban.height = element.height(soroban.width / CONST.SOROBAN.WIDTH * CONST.SOROBAN.HEIGHT + 'px').height();
         soroban.zoom = soroban.width / CONST.SOROBAN.WIDTH;
 
