@@ -164,6 +164,38 @@ var Soroban = function (element) {
             }
         }
     };
+
+    this.clear = function () {
+        for (var i = 0; i < CONST.FIELD.KETA; i++) {
+            soroban.ketas[i].digit = 0;
+        }
+
+        var changes = new Array();
+        for (var i = 0; i < CONST.FIELD.KETA; i++) {
+            for (var j = 0; j < 5; j++) {
+                if (soroban.ketas[i].tamas[j].state === false ^ j !== 0) {
+                    changes.push(soroban.ketas[i].tamas[j]);
+                }
+            }
+        }
+
+        for (var i = CONST.FIELD.KETA - 1; i >= 0; i--) {
+            soroban.enqueue((function (i) { // fuckin' ES5 trick
+                return function () {
+                    soroban.ketas[i].set(0);
+                };
+            })(i));
+        }
+
+        if (changes.length > 0) {
+            changes.shift().switch(soroban.dequeue);
+            changes.forEach(function (change) {
+                change.switch();
+            });
+        } else {
+            soroban.dequeue();
+        }
+    };
 };
 
 var Keta = function (number, soroban) {
