@@ -359,10 +359,6 @@ $(document).ready(function () {
     soroban.setNumber(new Date() / 1000);
 
     setInterval(function () {
-        soroban.addNumber(0, Math.random() * 10000);
+        soroban.addNumber(0, 1);
     }, 1000);
-
-    setInterval(function () {
-        soroban.clear();
-    }, 3000);
 });
