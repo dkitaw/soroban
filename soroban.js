@@ -353,12 +353,21 @@ var Tama = function (keta, number) {
     }
 };
 
+var Dealer = function (soroban, element) {
+    var dealer = this;
+
+    this.soroban = soroban;
+    this.element = element;
+
+    
+};
+
 $(document).ready(function () {
     soroban = new Soroban($('#soroban'));
 
     soroban.setNumber(new Date() / 1000);
 
     setInterval(function () {
-        soroban.addNumber(0, 1);
+        soroban.addNumber(0, Math.random() * 10000);
     }, 1000);
 });
