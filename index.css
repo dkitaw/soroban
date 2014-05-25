@@ -11,7 +11,7 @@
     background-image: radial-gradient(circle farthest-corner at center, #FFEFC2 0%, #D6BEA5 100%);
 }
 
-#soroban {
+#そろばん {
     margin: 0 auto;
     padding: 0;
 
@@ -29,7 +29,7 @@
     z-index: 200;
 }
 
-img#base {
+img#枠 {
     width: 100%;
     height: 100%;
 
@@ -40,7 +40,7 @@ img#base {
     z-index: 0;
 }
 
-#tamas {
+#珠 {
     width: 100%;
     height: 100%;
 
@@ -51,11 +51,11 @@ img#base {
     z-index: 100;
 }
 
-.tama {
+.珠 {
     position: absolute;
 }
 
-#shadows {
+#影 {
     width: 100%;
     height: 100%;
 
@@ -66,6 +66,6 @@ img#base {
     z-index: -100;
 }
 
-.shadow {
+.影 {
     position: absolute;
 }

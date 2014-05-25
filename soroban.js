@@ -1,4 +1,4 @@
-﻿var CONST = {
+var CONST = {
     SOROBAN: {
         HEIGHT: 318,
         WIDTH: 1316
@@ -35,38 +35,38 @@ var se = {
     })
 };
 
-var digitToState = function (digit, tama) {
-    if (tama === 0) {
+var digitToState = function (digit, 珠) {
+    if (珠 === 0) {
         return digit >= 5;
     } else {
-        return (digit % 5) >= tama
+        return (digit % 5) >= 珠
     }
 };
 
-var Soroban = function (element) {
-    var soroban = this;
+var 算盤 = function (element) {
+    var そろばん = this;
 
-    this.ketas = new Array();
+    this.桁 = new Array();
     for (var i = 0; i < CONST.FIELD.KETA; i++) {
-        this.ketas.push(new Keta(i, this));
+        this.桁.push(new Keta(i, this));
     }
 
     this.arrange = function () {
         for (var i = 0; i < CONST.FIELD.KETA; i++) {
             for (var j = 0; j < 5; j++) {
-                soroban.ketas[i].tamas[j].allocate(this.zoom);
+                そろばん.桁[i].珠[j].allocate(this.zoom);
             }
         }
     };
 
     this.onResize = function () {
-        soroban.width = element.width('80%').width();
-        soroban.height = element.height(soroban.width / CONST.SOROBAN.WIDTH * CONST.SOROBAN.HEIGHT + 'px').height();
-        soroban.zoom = soroban.width / CONST.SOROBAN.WIDTH;
+        そろばん.width = element.width('80%').width();
+        そろばん.height = element.height(そろばん.width / CONST.SOROBAN.WIDTH * CONST.SOROBAN.HEIGHT + 'px').height();
+        そろばん.zoom = そろばん.width / CONST.SOROBAN.WIDTH;
 
-        element.css({ 'margin-top': $(window).height() / 2 - soroban.height / 2 });
+        element.css({ 'margin-top': $(window).height() / 2 - そろばん.height / 2 });
 
-        soroban.arrange();
+        そろばん.arrange();
     };
 
     this.onResize();
@@ -76,40 +76,40 @@ var Soroban = function (element) {
     this.running = false;
 
     this.run = function () {
-        if (soroban.running === false) {
-            soroban.dequeue();
+        if (そろばん.running === false) {
+            そろばん.dequeue();
         }
     };
 
     this.dequeue = function (seBuzz) {
-        if (soroban.running && seBuzz) {
+        if (そろばん.running && seBuzz) {
             seBuzz.stop();
             seBuzz.play();
         }
-        if (soroban.queue.length > 0) {
-            soroban.running = true;
-            soroban.queue.shift()();
+        if (そろばん.queue.length > 0) {
+            そろばん.running = true;
+            そろばん.queue.shift()();
         } else {
-            soroban.running = false;
+            そろばん.running = false;
         }
     };
 
     this.enqueue = function (item) {
-        soroban.queue.push(item);
-        soroban.run();
-        console.log(soroban.queue);
+        そろばん.queue.push(item);
+        そろばん.run();
+        console.log(そろばん.queue);
     };
 
-    this.addDigit = function (keta, digit) {
-        var counter = keta;
+    this.addDigit = function (桁, digit) {
+        var counter = 桁;
         if (digit >= 0) {
             var carry = digit;
             while (carry !== 0 && counter < CONST.FIELD.KETA) {
-                var sum = soroban.ketas[counter].digit + carry;
-                soroban.enqueue((function (counter, sum) { // fuckin' ES5 trick
-                    soroban.ketas[counter].digit = sum % 10;
+                var sum = そろばん.桁[counter].digit + carry;
+                そろばん.enqueue((function (counter, sum) { // fuckin' ES5 trick
+                    そろばん.桁[counter].digit = sum % 10;
                     return function () {
-                        soroban.ketas[counter].set(sum % 10);
+                        そろばん.桁[counter].set(sum % 10);
                     };
                 })(counter, sum));
                 carry = Math.floor(sum / 10);
@@ -118,11 +118,11 @@ var Soroban = function (element) {
         } else {
             var carry = -digit;
             while (carry !== 0 && counter < CONST.FIELD.KETA) {
-                var sum = 10 + soroban.ketas[counter].digit - carry;
-                soroban.enqueue((function (counter, sum) { // fuckin' ES5 trick
-                    soroban.ketas[counter].digit = sum % 10;
+                var sum = 10 + そろばん.桁[counter].digit - carry;
+                そろばん.enqueue((function (counter, sum) { // fuckin' ES5 trick
+                    そろばん.桁[counter].digit = sum % 10;
                     return function () {
-                        soroban.ketas[counter].set(sum % 10);
+                        そろばん.桁[counter].set(sum % 10);
                     };
                 })(counter, sum));
                 carry = 1 - Math.floor(sum / 10);
@@ -131,15 +131,15 @@ var Soroban = function (element) {
         }
     };
 
-    this.addNumber = function (keta, number) {
+    this.addNumber = function (桁, number) {
         var digits = new Array();
         if (number >= 0) {
             for (var i = 0; i < CONST.FIELD.KETA; i++) {
                 digits.push(number % 10);
                 number = Math.floor(number / 10);
             }
-            for (var i = CONST.FIELD.KETA - 1; i >= keta; i--) {
-                soroban.addDigit(i, digits[i - keta]);
+            for (var i = CONST.FIELD.KETA - 1; i >= 桁; i--) {
+                そろばん.addDigit(i, digits[i - 桁]);
             }
         } else {
             number = -number;
@@ -147,8 +147,8 @@ var Soroban = function (element) {
                 digits.push(number % 10);
                 number = Math.floor(number / 10);
             }
-            for (var i = CONST.FIELD.KETA - 1; i >= keta; i--) {
-                soroban.addDigit(i, -digits[i - keta]);
+            for (var i = CONST.FIELD.KETA - 1; i >= 桁; i--) {
+                そろばん.addDigit(i, -digits[i - 桁]);
             }
         }
     };
@@ -162,19 +162,19 @@ var Soroban = function (element) {
 
         if (!desc) {
             for (var i = CONST.FIELD.KETA - 1; i >= 0; i--) {
-                soroban.enqueue((function (i, digit) { // fuckin' ES5 trick
-                    soroban.ketas[i].digit = digit;
+                そろばん.enqueue((function (i, digit) { // fuckin' ES5 trick
+                    そろばん.桁[i].digit = digit;
                     return function () {
-                        soroban.ketas[i].set(digit);
+                        そろばん.桁[i].set(digit);
                     };
                 })(i, digits[i]));
             }
         } else {
             for (var i = 0; i < CONST.FIELD.KETA; i++) {
-                soroban.enqueue((function (i, digit) { // fuckin' ES5 trick
-                    soroban.ketas[i].digit = digit;
+                そろばん.enqueue((function (i, digit) { // fuckin' ES5 trick
+                    そろばん.桁[i].digit = digit;
                     return function () {
-                        soroban.ketas[i].set(digit);
+                        そろばん.桁[i].set(digit);
                     };
                 })(i, digits[i]));
             }
@@ -182,47 +182,47 @@ var Soroban = function (element) {
     };
 
     this.clear = function () {
-        soroban.enqueue(function () {
+        そろばん.enqueue(function () {
             for (var i = 0; i < CONST.FIELD.KETA; i++) {
-                soroban.ketas[i].digit = 0;
+                そろばん.桁[i].digit = 0;
             }
 
             var changes = new Array();
             for (var i = 0; i < CONST.FIELD.KETA; i++) {
                 for (var j = 0; j < 5; j++) {
-                    if (digitToState(soroban.ketas[i].digit, j) === false ^ j !== 0) {
-                        changes.push(soroban.ketas[i].tamas[j]);
+                    if (digitToState(そろばん.桁[i].digit, j) === false ^ j !== 0) {
+                        changes.push(そろばん.桁[i].珠[j]);
                     }
                 }
             }
 
             for (var i = 0; i < CONST.FIELD.KETA; i++) {
-                soroban.ketas[i].digit = 0;
+                そろばん.桁[i].digit = 0;
             }
 
             if (changes.length > 0) {
-                soroban.enqueue(function () {
+                そろばん.enqueue(function () {
                     changes.shift().switch(function () {
-                        soroban.dequeue(se.clitter);
+                        そろばん.dequeue(se.clitter);
                     });
                     changes.forEach(function (change) {
                         change.switch();
                     });
                 });
 
-                soroban.enqueue(function () {
+                そろばん.enqueue(function () {
                     setTimeout(function () {
-                        soroban.dequeue();
+                        そろばん.dequeue();
                     }, 500)
                 })
             } else {
-                soroban.dequeue();
+                そろばん.dequeue();
             }
 
             for (var i = CONST.FIELD.KETA - 1; i >= 0; i--) {
-                soroban.enqueue((function (i) { // fuckin' ES5 trick
+                そろばん.enqueue((function (i) { // fuckin' ES5 trick
                     return function () {
-                        soroban.ketas[i].set(0);
+                        そろばん.桁[i].set(0);
                     };
                 })(i));
             }
@@ -230,89 +230,89 @@ var Soroban = function (element) {
     };
 };
 
-var Keta = function (number, soroban) {
-    var keta = this;
+var Keta = function (number, そろばん) {
+    var 桁 = this;
 
-    this.keta = number;
+    this.桁 = number;
     this.digit = 0;
 
-    this.tamas = new Array();
+    this.珠 = new Array();
     for (var i = 0; i < 5; i++) {
-        this.tamas.push(new Tama(this.keta, i));
+        this.珠.push(new Tama(this.桁, i));
     }
 
     this.set = function (digit) {
         var changes = new Array();
         for (var i = 1; i <= 4; i++) {
-            if (keta.tamas[i].state === false ^ (digit % 5) < i) {
-                changes.push(keta.tamas[i]);
+            if (桁.珠[i].state === false ^ (digit % 5) < i) {
+                changes.push(桁.珠[i]);
             }
         }
 
         if (changes.length > 0) {
-            if (keta.tamas[0].state === false ^ digit < 5) {
+            if (桁.珠[0].state === false ^ digit < 5) {
                 changes.shift().switch(function () {
-                    keta.tamas[0].switch(function () {
-                        soroban.dequeue(se.crack);
+                    桁.珠[0].switch(function () {
+                        そろばん.dequeue(se.crack);
                     });
                 });
             } else {
                 changes.shift().switch(function () {
-                    soroban.dequeue(se.crack);
+                    そろばん.dequeue(se.crack);
                 });
             }
             changes.forEach(function (change) {
                 change.switch();
             });
-        } else if (keta.tamas[0].state === false ^ digit < 5) {
-            keta.tamas[0].switch(function () {
-                soroban.dequeue(se.crack);
+        } else if (桁.珠[0].state === false ^ digit < 5) {
+            桁.珠[0].switch(function () {
+                そろばん.dequeue(se.crack);
             });
         } else {
-            soroban.dequeue();
+            そろばん.dequeue();
         }
     };
 };
 
-var Tama = function (keta, number) {
-    this.keta = keta;
+var Tama = function (桁, number) {
+    this.桁 = 桁;
     this.number = number;
 
-    var tamaId = 'tama' + keta + '_' + number;
-    var shadowId = 'shadow' + keta + '_' + number;
+    var 珠Id = '珠' + 桁 + '_' + number;
+    var 影Id = '影' + 桁 + '_' + number;
 
-    var $tama = $('<img>', {
-        id: tamaId,
-        class: 'tama',
+    var $珠 = $('<img>', {
+        id: 珠Id,
+        class: '珠',
         src: 'img/tama.png'
-    }).appendTo('#tamas');
+    }).appendTo('#珠');
 
-    var $shadow = $('<img>', {
-        id: shadowId,
-        class: 'shadow',
+    var $影 = $('<img>', {
+        id: 影Id,
+        class: '影',
         src: 'img/shadow.png'
-    }).appendTo('#shadows');
+    }).appendTo('#影');
 
     this.state = false;
     this.zoom = 1;
 
     this.allocate = function (zoom) {
         this.zoom = zoom;
-        $tama.css(this.tamaCSS());
-        $shadow.css(this.shadowCSS());
+        $珠.css(this.珠CSS());
+        $影.css(this.影CSS());
     }
 
     this.switch = function (callback) {
         this.state = !(this.state);
-        $tama.animate(this.tamaCSS(), CONST.SPEED, 'swing', function () {
+        $珠.animate(this.珠CSS(), CONST.SPEED, 'swing', function () {
             if (callback) callback();
         });
-        $shadow.animate(this.shadowCSS(), CONST.SPEED, 'swing');
+        $影.animate(this.影CSS(), CONST.SPEED, 'swing');
     }
 
     this.virtualX = function () {
         return CONST.FIELD.X
-            + CONST.FIELD.KETAWIDTH * (CONST.FIELD.KETA - this.keta - 0.5);
+            + CONST.FIELD.KETAWIDTH * (CONST.FIELD.KETA - this.桁 - 0.5);
     };
 
     this.virtualY = function () {
@@ -336,7 +336,7 @@ var Tama = function (keta, number) {
         }
     };
 
-    this.tamaCSS = function () {
+    this.珠CSS = function () {
         return {
             top: (this.virtualY() - CONST.TAMA.HEIGHT / 2) * this.zoom + 'px',
             left: (this.virtualX() - CONST.TAMA.WIDTH / 2) * this.zoom + 'px',
@@ -345,7 +345,7 @@ var Tama = function (keta, number) {
         };
     };
 
-    this.shadowCSS = function () {
+    this.影CSS = function () {
         return {
             top: (this.virtualY() - CONST.SHADOW.HEIGHT / 2 + 5) * this.zoom + 'px',
             left: (
@@ -359,22 +359,22 @@ var Tama = function (keta, number) {
     }
 };
 
-var Dealer = function (soroban, element) {
+var Dealer = function (そろばん, element) {
     var dealer = this;
 
-    this.soroban = soroban;
+    this.そろばん = そろばん;
     this.element = element;
 
     
 };
 
 $(document).ready(function () {
-    soroban = new Soroban($('#soroban'));
+    そろばん = new 算盤($('#そろばん'));
 
-    soroban.setNumber(new Date() / 1000);
+    そろばん.setNumber(new Date() / 1000);
 
     setInterval(function () {
-        soroban.addNumber(0, Math.random() * 10000);
+        そろばん.addNumber(0, Math.random() * 10000);
     }, 1000);
 
     dealer = new Dealer();
