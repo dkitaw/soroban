@@ -29,7 +29,18 @@ CONST.FIELD.HEIGHT = CONST.FIELD.TOPHEIGHT + CONST.FIELD.MIDDLEHEIGHT + CONST.FI
 var se = {
     crack: new buzz.sound('se/crack', {
         formats: ['mp3', 'wav']
+    }),
+    clitter: new buzz.sound('se/clitter', {
+        formats: ['mp3', 'wav']
     })
+};
+
+var digitToState = function (digit, tama) {
+    if (tama === 0) {
+        return digit >= 5;
+    } else {
+        return (digit % 5) >= tama
+    }
 };
 
 var Soroban = function (element) {
@@ -70,7 +81,11 @@ var Soroban = function (element) {
         }
     };
 
-    this.dequeue = function () {
+    this.dequeue = function (seBuzz) {
+        if (soroban.running && seBuzz) {
+            seBuzz.stop();
+            seBuzz.play();
+        }
         if (soroban.queue.length > 0) {
             soroban.running = true;
             soroban.queue.shift()();
@@ -82,6 +97,7 @@ var Soroban = function (element) {
     this.enqueue = function (item) {
         soroban.queue.push(item);
         soroban.run();
+        console.log(soroban.queue);
     };
 
     this.addDigit = function (keta, digit) {
@@ -174,10 +190,33 @@ var Soroban = function (element) {
             var changes = new Array();
             for (var i = 0; i < CONST.FIELD.KETA; i++) {
                 for (var j = 0; j < 5; j++) {
-                    if (soroban.ketas[i].tamas[j].state === false ^ j !== 0) {
+                    if (digitToState(soroban.ketas[i].digit, j) === false ^ j !== 0) {
                         changes.push(soroban.ketas[i].tamas[j]);
                     }
                 }
+            }
+
+            for (var i = 0; i < CONST.FIELD.KETA; i++) {
+                soroban.ketas[i].digit = 0;
+            }
+
+            if (changes.length > 0) {
+                soroban.enqueue(function () {
+                    changes.shift().switch(function () {
+                        soroban.dequeue(se.clitter);
+                    });
+                    changes.forEach(function (change) {
+                        change.switch();
+                    });
+                });
+
+                soroban.enqueue(function () {
+                    setTimeout(function () {
+                        soroban.dequeue();
+                    }, 500)
+                })
+            } else {
+                soroban.dequeue();
             }
 
             for (var i = CONST.FIELD.KETA - 1; i >= 0; i--) {
@@ -186,15 +225,6 @@ var Soroban = function (element) {
                         soroban.ketas[i].set(0);
                     };
                 })(i));
-            }
-
-            if (changes.length > 0) {
-                changes.shift().switch(soroban.dequeue);
-                changes.forEach(function (change) {
-                    change.switch();
-                });
-            } else {
-                soroban.dequeue();
             }
         });
     };
@@ -222,16 +252,22 @@ var Keta = function (number, soroban) {
         if (changes.length > 0) {
             if (keta.tamas[0].state === false ^ digit < 5) {
                 changes.shift().switch(function () {
-                    keta.tamas[0].switch(soroban.dequeue);
+                    keta.tamas[0].switch(function () {
+                        soroban.dequeue(se.crack);
+                    });
                 });
             } else {
-                changes.shift().switch(soroban.dequeue);
+                changes.shift().switch(function () {
+                    soroban.dequeue(se.crack);
+                });
             }
             changes.forEach(function (change) {
                 change.switch();
             });
         } else if (keta.tamas[0].state === false ^ digit < 5) {
-            keta.tamas[0].switch(soroban.dequeue);
+            keta.tamas[0].switch(function () {
+                soroban.dequeue(se.crack);
+            });
         } else {
             soroban.dequeue();
         }
@@ -269,8 +305,6 @@ var Tama = function (keta, number) {
     this.switch = function (callback) {
         this.state = !(this.state);
         $tama.animate(this.tamaCSS(), CONST.SPEED, 'swing', function () {
-            se.crack.stop();
-            se.crack.play();
             if (callback) callback();
         });
         $shadow.animate(this.shadowCSS(), CONST.SPEED, 'swing');
@@ -325,8 +359,13 @@ var Tama = function (keta, number) {
     }
 };
 
-var Dealer = function (soroban) {
+var Dealer = function (soroban, element) {
+    var dealer = this;
+
     this.soroban = soroban;
+    this.element = element;
+
+    
 };
 
 $(document).ready(function () {
@@ -335,7 +374,7 @@ $(document).ready(function () {
     soroban.setNumber(new Date() / 1000);
 
     setInterval(function () {
-        soroban.addNumber(0, 1);
+        soroban.addNumber(0, Math.random() * 10000);
     }, 1000);
 
     dealer = new Dealer();
