@@ -176,11 +176,7 @@ var Soroban = function (element) {
 
     this.clear = function () {
         soroban.enqueue(function () {
-            for (var i = 0; i < CONST.FIELD.KETA; i++) {
-                soroban.ketas[i].digit = 0;
-            }
-
-            var changes = new Array();
+            var changes = [];
             for (var i = 0; i < CONST.FIELD.KETA; i++) {
                 for (var j = 0; j < 5; j++) {
                     if (digitToState(soroban.ketas[i].digit, j) === false ^ j !== 0) {
@@ -207,9 +203,7 @@ var Soroban = function (element) {
                     setTimeout(function () {
                         soroban.dequeue();
                     }, 500)
-                })
-            } else {
-                soroban.dequeue();
+                });
             }
 
             for (var i = CONST.FIELD.KETA - 1; i >= 0; i--) {
@@ -219,6 +213,8 @@ var Soroban = function (element) {
                     };
                 })(i));
             }
+
+            soroban.dequeue();
         });
     };
 };
