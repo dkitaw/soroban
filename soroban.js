@@ -26,14 +26,9 @@
 CONST.FIELD.WIDTH = CONST.FIELD.KETA * CONST.FIELD.KETAWIDTH;
 CONST.FIELD.HEIGHT = CONST.FIELD.TOPHEIGHT + CONST.FIELD.MIDDLEHEIGHT + CONST.FIELD.BOTTOMHEIGHT;
 
-var se = {
-    crack: new buzz.sound('se/crack', {
-        formats: ['mp3', 'wav']
-    }),
-    clitter: new buzz.sound('se/clitter', {
-        formats: ['mp3', 'wav']
-    })
-};
+createjs.Sound.alternateExtensions = ['wav'];
+createjs.Sound.registerSound('se/crack.mp3', 'crack', 10);
+createjs.Sound.registerSound('se/clitter.mp3', 'clitter', 10);
 
 var digitToState = function (digit, tama) {
     if (tama === 0) {
@@ -81,10 +76,9 @@ var Soroban = function (element) {
         }
     };
 
-    this.dequeue = function (seBuzz) {
-        if (soroban.running && seBuzz) {
-            seBuzz.stop();
-            seBuzz.play();
+    this.dequeue = function (se) {
+        if (soroban.running && se) {
+            createjs.Sound.play(se)
         }
         if (soroban.queue.length > 0) {
             soroban.running = true;
@@ -97,7 +91,6 @@ var Soroban = function (element) {
     this.enqueue = function (item) {
         soroban.queue.push(item);
         soroban.run();
-        console.log(soroban.queue);
     };
 
     this.addDigit = function (keta, digit) {
@@ -203,7 +196,7 @@ var Soroban = function (element) {
             if (changes.length > 0) {
                 soroban.enqueue(function () {
                     changes.shift().switch(function () {
-                        soroban.dequeue(se.clitter);
+                        soroban.dequeue('clitter');
                     });
                     changes.forEach(function (change) {
                         change.switch();
@@ -253,12 +246,12 @@ var Keta = function (number, soroban) {
             if (keta.tamas[0].state === false ^ digit < 5) {
                 changes.shift().switch(function () {
                     keta.tamas[0].switch(function () {
-                        soroban.dequeue(se.crack);
+                        soroban.dequeue('crack');
                     });
                 });
             } else {
                 changes.shift().switch(function () {
-                    soroban.dequeue(se.crack);
+                    soroban.dequeue('crack');
                 });
             }
             changes.forEach(function (change) {
@@ -266,7 +259,7 @@ var Keta = function (number, soroban) {
             });
         } else if (keta.tamas[0].state === false ^ digit < 5) {
             keta.tamas[0].switch(function () {
-                soroban.dequeue(se.crack);
+                soroban.dequeue('crack');
             });
         } else {
             soroban.dequeue();
@@ -365,17 +358,13 @@ var Dealer = function (soroban, element) {
     this.soroban = soroban;
     this.element = element;
 
-    
+
 };
 
 $(document).ready(function () {
     soroban = new Soroban($('#soroban'));
 
     soroban.setNumber(new Date() / 1000);
-
-    setInterval(function () {
-        soroban.addNumber(0, Math.random() * 10000);
-    }, 1000);
 
     dealer = new Dealer();
 });
