@@ -9,6 +9,9 @@
     background-image: -webkit-gradient(radial, center center, 0, center center, 506, color-stop(0, #FFEFC2), color-stop(1, #D6BEA5));
     background-image: -webkit-radial-gradient(center, circle farthest-corner, #FFEFC2 0%, #D6BEA5 100%);
     background-image: radial-gradient(circle farthest-corner at center, #FFEFC2 0%, #D6BEA5 100%);
+
+    background-image: url('img/background.jpg');
+    background-size: cover;
 }
 
 #soroban {
