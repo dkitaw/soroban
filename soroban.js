@@ -59,7 +59,7 @@ var Soroban = function (element) {
         soroban.height = element.height(soroban.width / CONST.SOROBAN.WIDTH * CONST.SOROBAN.HEIGHT + 'px').height();
         soroban.zoom = soroban.width / CONST.SOROBAN.WIDTH;
 
-        element.css({ 'margin-top': $(window).height() / 2 - soroban.height / 2 });
+        element.css({ 'top': $(window).height() / 2 - soroban.height / 2 });
 
         soroban.arrange();
     };
